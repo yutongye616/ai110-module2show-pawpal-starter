@@ -1,84 +1,116 @@
-# PawPal+ (Module 2 Project)
+# 🐾 PawPal+
 
-You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
+A smart pet care management system built with Python OOP and Streamlit.
+PawPal+ helps pet owners track daily routines — feedings, walks, medications,
+and appointments — using algorithmic scheduling logic to organize and prioritize tasks.
 
-## Scenario
+---
 
-A busy pet owner needs help staying consistent with pet care. They want an assistant that can:
+## 📸 Demo
 
-- Track pet care tasks (walks, feeding, meds, enrichment, grooming, etc.)
-- Consider constraints (time available, priority, owner preferences)
-- Produce a daily plan and explain why it chose that plan
+<a href="/course_images/ai110/pawpal_screenshot.png" target="_blank">
+  <img src='/course_images/ai110/pawpal_screenshot.png' title='PawPal App'
+  width='' alt='PawPal App' class='center-block' />
+</a>
 
-Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
+---
 
-## What you will build
+## ✨ Features
 
-Your final app should:
+- **Owner & pet management** — create an owner, add multiple pets, and manage
+  them all in one place with persistent session state
+- **Task scheduling** — assign care tasks to individual pets with a time,
+  description, and frequency (once / daily / weekly)
+- **Sorting by time** — the Scheduler automatically sorts all tasks into
+  chronological order using Python's `sorted()` with a lambda key on HH:MM strings
+- **Filtering** — filter the schedule by pet name or completion status to focus
+  on exactly what needs attention
+- **Conflict warnings** — the Scheduler scans each pet's tasks for exact time
+  matches and surfaces a plain-language warning in the UI via `st.warning()`
+  rather than crashing
+- **Daily recurrence** — marking a daily or weekly task complete automatically
+  generates the next occurrence using Python's `timedelta`
 
-- Let a user enter basic owner + pet info
-- Let a user add/edit tasks (duration + priority at minimum)
-- Generate a daily schedule/plan based on constraints and priorities
-- Display the plan clearly (and ideally explain the reasoning)
-- Include tests for the most important scheduling behaviors
+---
 
-## Getting started
-
-### Setup
-
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+## 🗂 Project Structure
+```
+pawpal_system.py   — backend logic (Owner, Pet, Task, Scheduler classes)
+app.py             — Streamlit UI
+main.py            — CLI demo script for verifying backend logic
+tests/
+  test_pawpal.py   — automated pytest suite
+uml_final.png      — final system architecture diagram
+reflection.md      — design decisions and AI collaboration notes
 ```
 
-### Suggested workflow
+---
 
-1. Read the scenario carefully and identify requirements and edge cases.
-2. Draft a UML diagram (classes, attributes, methods, relationships).
-3. Convert UML into Python class stubs (no logic yet).
-4. Implement scheduling logic in small increments.
-5. Add tests to verify key behaviors.
-6. Connect your logic to the Streamlit UI in `app.py`.
-7. Refine UML so it matches what you actually built.
+## 🚀 How to Run
+```bash
+# Install dependencies
+pip install streamlit pytest
+
+# Run the app
+streamlit run app.py
+
+# Run the CLI demo
+python main.py
+```
+
+---
 
 ## Smarter Scheduling
 
 PawPal+ includes four algorithmic features in the `Scheduler` class:
 
-**Sorting by time**: Tasks are sorted chronologically using Python's `sorted()`
-with a lambda key on the HH:MM time string, so owners always see their day
-in order regardless of the order tasks were added.
+**Sorting by time** — tasks are sorted chronologically using `sorted()` with a
+lambda key on the HH:MM time string so owners always see their day in order
+regardless of the order tasks were added.
 
-**Filtering**: Tasks can be filtered by pet name or completion status, letting
+**Filtering** — tasks can be filtered by pet name or completion status, letting
 owners focus on one animal or see only what still needs to be done.
 
-**Recurring tasks**: When a daily or weekly task is marked complete, the
+**Recurring tasks** — when a daily or weekly task is marked complete, the
 Scheduler automatically generates a new Task for the next occurrence using
-Python's `timedelta` — daily tasks roll forward 1 day, weekly tasks roll
-forward 7 days.
+`timedelta`. Daily tasks roll forward 1 day, weekly tasks roll forward 7 days.
 
-**Conflict detection**: The Scheduler scans each pet's tasks for exact time
+**Conflict detection** — the Scheduler scans each pet's tasks for exact time
 matches and returns a plain-language warning string rather than crashing,
-so the UI can surface the conflict gracefully.v
+so the UI can surface the conflict gracefully.
+
+---
 
 ## Testing PawPal+
-
-Run the full test suite with:
 ```bash
 python -m pytest
 ```
 
-### What the tests cover
+The test suite covers:
 
-- **Task completion** — `mark_complete()` correctly flips the completed flag
-- **Task addition** — `add_task()` increases a pet's task count
-- **Sorting** — tasks added out of order are returned in chronological HH:MM order
-- **Conflict detection** — two tasks at the same time return a warning string
-- **Recurrence** — marking a daily task complete generates tomorrow's task
-- **Edge cases** — pet with no tasks, filter by pet name, filter by status, one-time tasks don't recur
+- Task completion toggling
+- Task addition increasing pet task count
+- Sorting returning chronological order
+- Conflict detection flagging duplicate times
+- Recurrence generating tomorrow's task after mark complete
+- Pet with no tasks returning empty list without crashing
+- Filter by pet name returning correct tasks
+- Filter by status returning only matching tasks
+- One-time tasks not generating a next occurrence
 
-### Confidence level: ⭐⭐⭐⭐ (4/5)
+**Confidence level: ⭐⭐⭐⭐ (4/5)**
 
-Happy paths and the most common edge cases are fully covered. Remaining gaps:
+Happy paths and the most common edge cases are covered. Remaining gaps:
 weekly recurrence, midnight boundary sorting, and cross-pet conflict detection.
+
+---
+
+## 🏗 System Architecture
+
+See `uml_final.png` for the full class diagram. The four core classes are:
+
+- `Task` — dataclass representing a single care activity
+- `Pet` — dataclass storing pet details and a list of tasks
+- `Owner` — manages multiple pets and exposes a flat task list
+- `Scheduler` — all algorithmic logic: sorting, filtering, conflict detection,
+  and recurring task generation
