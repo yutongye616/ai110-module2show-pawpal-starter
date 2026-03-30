@@ -61,3 +61,24 @@ forward 7 days.
 **Conflict detection**: The Scheduler scans each pet's tasks for exact time
 matches and returns a plain-language warning string rather than crashing,
 so the UI can surface the conflict gracefully.v
+
+## Testing PawPal+
+
+Run the full test suite with:
+```bash
+python -m pytest
+```
+
+### What the tests cover
+
+- **Task completion** — `mark_complete()` correctly flips the completed flag
+- **Task addition** — `add_task()` increases a pet's task count
+- **Sorting** — tasks added out of order are returned in chronological HH:MM order
+- **Conflict detection** — two tasks at the same time return a warning string
+- **Recurrence** — marking a daily task complete generates tomorrow's task
+- **Edge cases** — pet with no tasks, filter by pet name, filter by status, one-time tasks don't recur
+
+### Confidence level: ⭐⭐⭐⭐ (4/5)
+
+Happy paths and the most common edge cases are fully covered. Remaining gaps:
+weekly recurrence, midnight boundary sorting, and cross-pet conflict detection.
