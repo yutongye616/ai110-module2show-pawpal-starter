@@ -4,9 +4,6 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
-
 My initial UML design centered on four classes with clearly separated responsibilities:
 
 - **Task**: A dataclass holding a single pet care activity — its description, scheduled time (HH:MM string), frequency ("once", "daily", "weekly"), and a completion boolean. It is a pure data container with no scheduling logic of its own.
@@ -16,12 +13,7 @@ My initial UML design centered on four classes with clearly separated responsibi
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
-
 Yes, the design changed in one meaningful way. In the initial skeleton, `mark_complete()` was a simple boolean toggle on Task. During Phase 4, when implementing recurring tasks, I realized this method needed to do more: when a daily or weekly task is marked complete, it should automatically create and return a new Task scheduled for the next occurrence. This meant `mark_complete()` could no longer be a one-liner on a passive dataclass — I moved the recurrence logic into the Scheduler's `mark_task_complete()` method instead, keeping Task itself simple and letting the Scheduler handle the complexity. This separation made the recurrence logic easier to test in isolation.
-
----
 
 ---
 
@@ -29,13 +21,16 @@ Yes, the design changed in one meaningful way. In the initial skeleton, `mark_co
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+The scheduler considers two primary constraints:
+
+1. **Time**: Tasks are sorted by their scheduled HH:MM time so owners see their day in chronological order. This is the highest-priority constraint because the core user need is "what do I do next."
+2. **Completion status**: Filtering by whether a task is done or pending lets owners focus on what still needs attention, reducing cognitive load.
+3. **Pet identity**: Filtering by pet name allows owners with multiple pets to view one animal's schedule in isolation.
+
+Time was prioritized above the others because a pet care schedule is fundamentally time-driven — a medication due at 08:00 cannot be treated the same as one due at 20:00, regardless of which pet it belongs to.
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
 The scheduler detects conflicts by checking for exact time string matches between
 tasks for the same pet. This means two tasks at "09:00" are flagged, but a task
 at "09:00" and one at "09:15" are not — even if the first one takes 30 minutes.
@@ -44,15 +39,11 @@ medication, a quick walk) are treated as point-in-time events, not time blocks.
 Exact-match detection catches the most common real-world mistake — accidentally
 scheduling two things at the same time — without needing complex interval math.
 
-
 ---
 
 ## 3. AI Collaboration
 
 **a. How you used AI**
-
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
 
 I used AI at every phase of the project. During design, I described my four
 classes in plain English and asked Copilot to generate a Mermaid.js UML diagram,
@@ -70,8 +61,6 @@ vague ones like "how do I build a scheduler?"
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
 When I asked Copilot to generate the conflict detection method, it produced a
 version that raised a ValueError when a conflict was found. I did not accept
 this because the project required a warning, not a crash — raising an exception
@@ -81,15 +70,12 @@ app.py through to the Scheduler to confirm the UI could not recover gracefully
 from an exception, then rewrote the method to return a warning string instead.
 The UI could then display it with st.warning() cleanly.
 
-
 ---
 
 ## 4. Testing and Verification
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
 I tested five core behaviors:
 - Task completion: calling mark_complete() sets the task's completed field to True
 - Task addition: add_task() increases the pet's task count by exactly one
@@ -101,11 +87,10 @@ These tests mattered because they each cover a distinct failure mode — wrong
 state mutation, silent data loss, sort instability, off-by-one date math, and
 incorrect error handling — rather than testing the same path twice.
 
-
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+⭐⭐⭐⭐ (4/5)
+
 The main happy paths and most likely edge cases are covered. If I had more time
 I would test: a pet with zero tasks, a task scheduled at midnight (00:00) to
 check string sort boundary behavior, weekly recurrence (only daily is currently
@@ -118,16 +103,13 @@ same pet.
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
 The CLI-first workflow was the best decision I made. Building and verifying all
 logic through main.py before touching app.py meant I was never debugging backend
 logic through a UI. Every time the terminal printed a clean sorted schedule I had
 real confidence before wiring anything to Streamlit.
 
-
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
 I would replace the HH:MM string format for task times with Python datetime.time
 objects. String comparison works for zero-padded times but breaks silently if a
 user types "9:00" instead of "09:00" — sorting and conflict detection both fail
@@ -137,7 +119,6 @@ input validation in app.py.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
 AI is most useful as a fast first draft, not a final answer. Every piece of
 AI-generated code in this project needed human review to be production-quality —
 whether that meant changing an exception to a warning, choosing a better type,
