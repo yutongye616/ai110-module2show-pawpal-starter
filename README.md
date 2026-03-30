@@ -8,11 +8,9 @@ and appointments — using algorithmic scheduling logic to organize and prioriti
 
 ## 📸 Demo
 
-<a href="/course_images/ai110/pawpal_screenshot.png" target="_blank">
-  <img src='/course_images/ai110/pawpal_screenshot.png' title='PawPal App'
-  width='' alt='PawPal App' class='center-block' />
+<a href="uml_final.png" target="_blank">
+  <img src='uml_final.png' title='PawPal App' width='' alt='PawPal App' class='center-block' />
 </a>
-
 ---
 
 ## ✨ Features
